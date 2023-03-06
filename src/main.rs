@@ -1,5 +1,3 @@
-use std::env::VarError;
-use std::process::exit;
 use dotenv::dotenv;
 use actix_web::{get, post, Responder, HttpServer, HttpResponse, App, web};
 use tokio_postgres::{NoTls, Error};
@@ -18,6 +16,7 @@ async fn main() -> std::io::Result<()> {
 
     check_env_key("DB_USER");
     check_env_key("DB_PASSWORD");
+    check_env_key("DB_HOST");
 
     println!("Starting server");
 
@@ -31,7 +30,7 @@ async fn main() -> std::io::Result<()> {
                     .service(post_counter)
             )
     })
-    .bind(("0.0.0.0", 3096))?
+    .bind(format!("0.0.0.0:{}", check_env_key("APP_PORT")) )?
     .run()
     .await
 }
@@ -73,10 +72,11 @@ async fn post_counter(req_body: String, counter_id: String) -> impl Responder {
 async fn db_test() -> Result<(), Error> {
     let user:String = check_env_key("DB_USER");
     let password:String = check_env_key("DB_PASSWORD");
+    let host:String = check_env_key("DB_HOST");
 
     // Connect to the database.
     let (client, connection) =
-        tokio_postgres::connect(format!("host=postgres user={} password={}", user, password).as_str(), NoTls).await?;
+        tokio_postgres::connect(format!("host={} user={} password={}", host, user, password).as_str(), NoTls).await?;
 
     tokio::spawn(async move {
         if let Err(e) = connection.await {
@@ -85,7 +85,7 @@ async fn db_test() -> Result<(), Error> {
     });
 
     let _rows = client
-        .prepare("CREATE DATABASE test")
+        .execute("CREATE DATABASE test", &[])
         .await?;
 
     Ok(())
