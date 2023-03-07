@@ -10,3 +10,4 @@ actix-web = "4.2.1"
 tokio-postgres = "0.7.6"
 tokio = "1.20.1"
 dotenv = "0.15.0"
+refinery = {version = "0.8.7", features = ["tokio-postgres"]}
