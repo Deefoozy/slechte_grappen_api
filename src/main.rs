@@ -3,8 +3,7 @@ use actix_web::{get, Responder, HttpServer, HttpResponse, App, web};
 
 mod models;
 mod controllers;
-
-#[path="libs/management.rs"] mod management;
+mod libs;
 
 fn check_env_key(key: &str) -> String {
     std::env::var(key).expect(
@@ -24,7 +23,7 @@ async fn main() -> std::io::Result<()> {
     if check_env_key("RUN_MIGRATIONS") == "yes" {
         println!("Running migrations.");
 
-        management::db_migrate()
+        libs::system_management::db_migrate()
             .await
             .expect("Migrations failed.");
     } else {
