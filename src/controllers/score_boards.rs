@@ -1,7 +1,5 @@
 use actix_web::{get, post, Responder, HttpResponse, web};
-
-#[path="../models/score_board.rs"]
-mod score_board;
+use crate::models::score_board;
 
 #[get("/")]
 pub async fn get_all() -> impl Responder {
