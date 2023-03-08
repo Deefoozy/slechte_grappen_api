@@ -3,6 +3,9 @@ use actix_web::{get, post, Responder, HttpServer, HttpResponse, App, web};
 use tokio_postgres::{NoTls, Error};
 use tokio;
 
+mod models;
+mod controllers;
+
 fn check_env_key(key: &str) -> String {
     std::env::var(key).expect(
         format!("Key \"{}\" has an issue", key.to_string())
@@ -29,12 +32,12 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            .service(test)
+            // .service(test)
             .service(
-                web::scope("/counters")
-                    .service(get_counters)
-                    .service(get_counter)
-                    .service(post_counter)
+                web::scope("/score_boards")
+                    .service(controllers::score_boards::get_all)
+                    .service(controllers::score_boards::get)
+                    .service(controllers::score_boards::create)
             )
     })
         .bind(format!("0.0.0.0:{}", check_env_key("APP_PORT")))?
@@ -46,56 +49,13 @@ async fn main() -> std::io::Result<()> {
 async fn test() -> impl Responder {
     println!("Get");
 
-    let res:Result<(),Error> = db_test().await;
-
-    if res.is_err() {
-        return HttpResponse::Unauthorized().body("Borked!");
-    }
-
-    return HttpResponse::Ok().body("Hello world!");
-}
-
-#[get("/")]
-async fn get_counters() -> impl Responder {
-    println!("Get counters");
+    // let res:Result<(),Error> = db_test().await;
+    //
+    // if res.is_err() {
+    //     return HttpResponse::Unauthorized().body("Borked!");
+    // }
 
     HttpResponse::Ok().body("Hello world!")
-}
-
-#[get("/{counter_id}")]
-async fn get_counter(counter_id: String) -> impl Responder {
-    println!("Get counter");
-
-    HttpResponse::Ok().body(format!("Hello world! {}", counter_id))
-}
-
-#[post("/{counter_id}")]
-async fn post_counter(req_body: String, counter_id: String) -> impl Responder {
-    println!("Post counters");
-
-    HttpResponse::Ok().body(format!("Hello world! {} | {}", req_body, counter_id))
-}
-
-async fn db_test() -> Result<(), Error> {
-    let user: String = check_env_key("DB_USER");
-    let password: String = check_env_key("DB_PASSWORD");
-    let host: String = check_env_key("DB_HOST");
-
-    // Connect to the database.
-    let (client, connection) =
-        tokio_postgres::connect(format!("host={} user={} password={}", host, user, password).as_str(), NoTls).await?;
-
-    tokio::spawn(async move {
-        if let Err(e) = connection.await {
-            eprintln!("connection error: {}", e);
-        }
-    });
-
-    let _rows = client
-        .execute("CREATE DATABASE test", &[])
-        .await?;
-
-    Ok(())
 }
 
 mod embedded {
