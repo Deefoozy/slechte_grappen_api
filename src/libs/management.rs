@@ -22,11 +22,12 @@ pub async fn db_migrate() -> Result<(), Error> {
             .await
             .unwrap();
 
-    tokio::spawn(async move {
+    let handle = tokio::spawn(async move {
         if let Err(e) = connection.await {
             eprintln!("connection error: {}", e);
         }
     });
+
 
     let migration_report = embedded::migrations::runner().run_async(&mut client).await.unwrap();
 
@@ -37,6 +38,8 @@ pub async fn db_migrate() -> Result<(), Error> {
             migration.version()
         );
     }
+
+    handle.abort();
 
     Ok(())
 }
