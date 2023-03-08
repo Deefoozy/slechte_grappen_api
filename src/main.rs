@@ -1,24 +1,14 @@
-use dotenv::dotenv;
-use actix_web::{get, Responder, HttpServer, HttpResponse, App, web};
-
 mod models;
 mod controllers;
 mod libs;
 
-fn check_env_key(key: &str) -> String {
-    std::env::var(key).expect(
-        format!("Key \"{}\" has an issue", key.to_string())
-            .as_str()
-    )
-}
+use dotenv::dotenv;
+use actix_web::{get, Responder, HttpServer, HttpResponse, App, web};
+use crate::libs::env_keys::check_env_key;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-
-    check_env_key("DB_USER");
-    check_env_key("DB_PASSWORD");
-    check_env_key("DB_HOST");
 
     if check_env_key("RUN_MIGRATIONS") == "yes" {
         println!("Running migrations.");

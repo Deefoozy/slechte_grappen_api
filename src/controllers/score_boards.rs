@@ -7,8 +7,13 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[get("/{id}")]
-pub async fn get(id: web::Path<i32>) -> impl Responder {
-    HttpResponse::Ok().body(format!("Hello world! {}", id))
+pub async fn get(id: web::Path<i64>) -> impl Responder {
+    let score_board = score_board::ScoreBoard::new(id.into_inner())
+        .await;
+
+    score_board.close();
+
+    HttpResponse::Ok().body(format!("Hello world! {} | {}", score_board.id, score_board.name))
 }
 
 #[post("/")]

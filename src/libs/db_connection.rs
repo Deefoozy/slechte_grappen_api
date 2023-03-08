@@ -1,4 +1,4 @@
-use tokio_postgres::{NoTls, Error, Client};
+use tokio_postgres::{NoTls, Client};
 use tokio;
 use tokio::task::JoinHandle;
 
