@@ -18,12 +18,17 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     )
         .await;
 
-    let mut score_board = score_board::ScoreBoard::new(id.into_inner(), None, None, None)
-        .await;
+    let mut score_board = score_board::ScoreBoard::new(id.into_inner(), None, None, None);
 
-    score_board.get_from_db(&db_conn);
+    score_board.get_from_db(&db_conn).await;
 
-    HttpResponse::Ok().body(format!("Hello world! {} | {}", score_board.id, score_board.name.expect("No Name")))
+    HttpResponse::Ok().body(
+        format!(
+            "Hello world! {} | {}",
+            score_board.id,
+            score_board.name.expect("No Name")
+        )
+    )
 }
 
 #[post("/")]

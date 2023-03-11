@@ -9,7 +9,7 @@ pub struct ScoreBoard {
 }
 
 impl ScoreBoard {
-    pub async fn new(
+    pub fn new(
         id: i64,
         name: Option<String>,
         point_increment: Option<i32>,
