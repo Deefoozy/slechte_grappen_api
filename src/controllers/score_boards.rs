@@ -1,4 +1,6 @@
 use actix_web::{get, post, Responder, HttpResponse, web};
+use crate::libs::db_connection::DatabaseConnection;
+use crate::libs::env_keys::check_env_key;
 use crate::models::score_board;
 
 #[get("/")]
@@ -8,12 +10,20 @@ pub async fn get_all() -> impl Responder {
 
 #[get("/{id}")]
 pub async fn get(id: web::Path<i64>) -> impl Responder {
-    let score_board = score_board::ScoreBoard::new(id.into_inner())
+    let db_conn = DatabaseConnection::new(
+        check_env_key("DB_HOST"),
+        check_env_key("DB_USER"),
+        check_env_key("DB_PASSWORD"),
+        check_env_key("DB_NAME"),
+    )
         .await;
 
-    score_board.close();
+    let mut score_board = score_board::ScoreBoard::new(id.into_inner(), None, None, None)
+        .await;
 
-    HttpResponse::Ok().body(format!("Hello world! {} | {}", score_board.id, score_board.name))
+    score_board.get_from_db(&db_conn);
+
+    HttpResponse::Ok().body(format!("Hello world! {} | {}", score_board.id, score_board.name.expect("No Name")))
 }
 
 #[post("/")]
