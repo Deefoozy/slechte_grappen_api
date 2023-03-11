@@ -2,12 +2,13 @@ mod models;
 mod controllers;
 mod libs;
 
+use std::io::Result;
 use dotenv::dotenv;
 use actix_web::{get, Responder, HttpServer, HttpResponse, App, web};
 use crate::libs::env_keys::check_env_key;
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> Result<()> {
     dotenv().ok();
 
     if check_env_key("RUN_MIGRATIONS") == "yes" {

@@ -18,9 +18,17 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     )
         .await;
 
-    let mut score_board = score_board::ScoreBoard::new(id.into_inner(), None, None, None);
+    let mut score_board = score_board::ScoreBoard::new(
+        id.into_inner(),
+        None,
+        None,
+        None,
+        None,
+        None
+    );
 
     score_board.get_from_db(&db_conn).await;
+    score_board.get_interfaces_from_db(&db_conn).await;
 
     HttpResponse::Ok().body(
         format!(
