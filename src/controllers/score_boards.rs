@@ -30,6 +30,8 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     score_board.get_from_db(&db_conn).await;
     score_board.get_interfaces_from_db(&db_conn).await;
 
+    db_conn.close();
+
     HttpResponse::Ok().body(
         format!(
             "Hello world! {} | {}",
