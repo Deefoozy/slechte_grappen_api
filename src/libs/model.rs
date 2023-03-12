@@ -10,7 +10,7 @@ pub struct Model {}
 impl Model {
     pub async fn get_by_id(db_conn: &DatabaseConnection, table_name: &str, id: &i64) -> Row {
         db_conn.client.query_one(
-            &query_builder::generate_single_clause_select(table_name, "id"),
+            &query_builder::generate_single_clause_select(&table_name, "id"),
             &[&id]
         )
             .await
@@ -18,15 +18,16 @@ impl Model {
     }
 
     pub async fn get_where_key(db_conn: &DatabaseConnection, table_name: &str, key: &str, id: &i64) -> Vec<Row> {
-        Model::get_where(
-            db_conn,
-            table_name,
-            &vec![WherePair::new(key, &id.to_string())]
-        ).await
+        db_conn.client.query(
+            &query_builder::generate_single_clause_select(&table_name, &key),
+            &[&id]
+        )
+            .await
+            .unwrap()
     }
 
     pub async fn get_where(db_conn: &DatabaseConnection, table_name: &str, pairs: &Vec<WherePair>) -> Vec<Row> {
-        let query = query_builder::generate_multi_clause_select(table_name, &pairs);
+        let query = query_builder::generate_multi_clause_select(&table_name, &pairs);
 
         let values = WherePair::strip_values(&pairs);
 
