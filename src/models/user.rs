@@ -41,7 +41,7 @@ impl User {
             return;
         };
 
-        let rows = Model::get_where(
+        let rows = Model::get_where_key(
             &db_conn,
             "user_scoreboards",
             "score_board_id",

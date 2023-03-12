@@ -12,3 +12,4 @@ tokio = "1.20.1"
 dotenv = "0.15.0"
 refinery = {version = "0.8.7", features = ["tokio-postgres"]}
 sql_query_builder = "1.0.2"
+futures-util = "0.3.27"

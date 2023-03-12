@@ -15,6 +15,26 @@ impl WherePair {
             value: value.to_string(),
         }
     }
+
+    pub fn strip_keys(pairs: &Vec<WherePair>) -> Vec<&str> {
+        let mut keys: Vec<&str> = Vec::new();
+
+        for pair in pairs {
+            keys.push(pair.key.as_str());
+        }
+
+        keys
+    }
+
+    pub fn strip_values(pairs: &Vec<WherePair>) -> Vec<&str> {
+        let mut values: Vec<&str> = Vec::new();
+
+        for pair in pairs {
+            values.push(&pair.value);
+        }
+
+        values
+    }
 }
 
 pub fn create_select(table_name: &str) -> Select {

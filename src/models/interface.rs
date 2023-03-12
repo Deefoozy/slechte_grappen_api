@@ -49,7 +49,7 @@ impl Interface {
             return;
         };
 
-        let rows = Model::get_where(
+        let rows = Model::get_where_key(
             &db_conn,
             "interface_scoreboards",
             "interface_id",
@@ -80,7 +80,7 @@ impl Interface {
             return;
         };
 
-        let rows = Model::get_where(
+        let rows = Model::get_where_key(
             &db_conn,
             "files",
             "interface_id",
