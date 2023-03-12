@@ -28,9 +28,7 @@ impl Model {
 
     pub async fn get_where(db_conn: &DatabaseConnection, table_name: &str, pairs: &Vec<WherePair>) -> Vec<Row> {
         let query = query_builder::generate_multi_clause_select(&table_name, &pairs);
-
         let values = WherePair::strip_values(&pairs);
-
         let res: RowStream = db_conn.client.query_raw(
             &query,
             values
