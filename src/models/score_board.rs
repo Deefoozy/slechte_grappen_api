@@ -1,7 +1,18 @@
+use sea_query::Iden;
+
 use crate::libs::db_connection::DatabaseConnection;
-use crate::libs::model::Model;
 use crate::models::interface::Interface;
 use crate::models::user::User;
+
+#[derive(Iden)]
+#[iden = "score_boards"]
+pub enum ScoreBoardTableDefinition {
+    Table,
+    Id,
+    Name,
+    Point,
+    Penalty,
+}
 
 pub struct ScoreBoard {
     pub id: i64,
@@ -36,16 +47,16 @@ impl ScoreBoard {
             return;
         };
 
-        let row = Model::get_by_id(
-            &db_conn,
-            "score_boards",
-            &self.id,
-        )
-            .await;
-
-        self.name = row.get(1);
-        self.point_increment = row.get(2);
-        self.penalty_increment = row.get(3);
+        // let row = Model::get_by_id(
+        //     &db_conn,
+        //     "score_boards",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // self.name = row.get(1);
+        // self.point_increment = row.get(2);
+        // self.penalty_increment = row.get(3);
     }
 
     pub async fn get_interfaces_from_db(&mut self, db_conn: &DatabaseConnection) {
@@ -53,29 +64,29 @@ impl ScoreBoard {
             return;
         };
 
-        let rows = Model::get_where_key(
-            &db_conn,
-            "interface_scoreboards",
-            "score_board_id",
-            &self.id,
-        )
-            .await;
-
-        let mut interfaces: Vec<Interface> = Vec::new();
-
-        for row in rows {
-            interfaces.push(
-                Interface::new(
-                    row.get(1),
-                    None,
-                    None,
-                    None,
-                    None
-                )
-            )
-        }
-
-        self.interfaces = Option::from(interfaces);
+        // let rows = Model::get_where_key(
+        //     &db_conn,
+        //     "interface_scoreboards",
+        //     "score_board_id",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // let mut interfaces: Vec<Interface> = Vec::new();
+        //
+        // for row in rows {
+        //     interfaces.push(
+        //         Interface::new(
+        //             row.get(1),
+        //             None,
+        //             None,
+        //             None,
+        //             None
+        //         )
+        //     )
+        // }
+        //
+        // self.interfaces = Option::from(interfaces);
     }
 
     pub async fn get_users_from_db(&mut self, db_conn: &DatabaseConnection) {
@@ -83,26 +94,26 @@ impl ScoreBoard {
             return;
         };
 
-        let rows = Model::get_where_key(
-            &db_conn,
-            "user_scoreboards",
-            "score_board_id",
-            &self.id,
-        )
-            .await;
-
-        let mut users: Vec<User> = Vec::new();
-
-        for row in rows {
-            users.push(
-                User::new(
-                    row.get(1),
-                    None,
-                    None,
-                )
-            )
-        }
-
-        self.users = Option::from(users);
+        // let rows = Model::get_where_key(
+        //     &db_conn,
+        //     "user_scoreboards",
+        //     "score_board_id",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // let mut users: Vec<User> = Vec::new();
+        //
+        // for row in rows {
+        //     users.push(
+        //         User::new(
+        //             row.get(1),
+        //             None,
+        //             None,
+        //         )
+        //     )
+        // }
+        //
+        // self.users = Option::from(users);
     }
 }

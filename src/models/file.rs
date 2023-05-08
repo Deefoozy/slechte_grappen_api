@@ -1,6 +1,16 @@
+use sea_query::Iden;
+
 use crate::libs::db_connection::DatabaseConnection;
-use crate::libs::model::Model;
 use crate::models::interface::Interface;
+
+#[derive(Iden)]
+#[iden = "files"]
+pub enum FileDatabaseDefinition {
+    Id,
+    InterfaceId,
+    #[iden = "type"]
+    FileType,
+}
 
 pub struct File {
     pub id: i64,
@@ -29,15 +39,15 @@ impl File {
             return;
         };
 
-        let row = Model::get_by_id(
-            &db_conn,
-            "files",
-            &self.id,
-        )
-            .await;
-
-        self.interface_id = row.get(1);
-        self.file_type = row.get(2);
+        // let row = Model::get_by_id(
+        //     &db_conn,
+        //     "files",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // self.interface_id = row.get(1);
+        // self.file_type = row.get(2);
     }
 
     pub async fn get_interface(&mut self, db_conn: &DatabaseConnection) {
@@ -45,21 +55,21 @@ impl File {
             return;
         };
 
-        let row = Model::get_by_id(
-            &db_conn,
-            "interface",
-            &self.id,
-        )
-            .await;
-
-        self.interface = Option::from(
-            Interface::new(
-                row.get(1),
-                row.get(2),
-                row.get(3),
-                None,
-                None,
-            )
-        );
+        // let row = Model::get_by_id(
+        //     &db_conn,
+        //     "interface",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // self.interface = Option::from(
+        //     Interface::new(
+        //         row.get(1),
+        //         row.get(2),
+        //         row.get(3),
+        //         None,
+        //         None,
+        //     )
+        // );
     }
 }

@@ -13,3 +13,4 @@ dotenv = "0.15.0"
 refinery = {version = "0.8.7", features = ["tokio-postgres"]}
 sql_query_builder = "1.0.2"
 futures-util = "0.3.27"
+sea-query = {version = "0.28.4", features = ['backend-postgres', 'with-json', 'postgres-array']}

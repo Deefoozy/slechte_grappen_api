@@ -1,5 +1,17 @@
+use sea_query::Iden;
+
 use crate::libs::db_connection::DatabaseConnection;
-use crate::libs::model::Model;
+
+#[derive(Iden)]
+#[iden = "points"]
+pub enum PointTableDefinition {
+    Table,
+    Id,
+    UserId,
+    ScoreBoardId,
+    Val,
+    ScoreType,
+}
 
 pub struct Point {
     pub id: i64,
@@ -31,16 +43,16 @@ impl Point {
             return;
         };
 
-        let row = Model::get_by_id(
-            &db_conn,
-            "points",
-            &self.id,
-        )
-            .await;
-
-        self.user_id = row.get(1);
-        self.score_board_id = row.get(2);
-        self.val = row.get(3);
-        self.score_type = row.get(4);
+        // let row = Model::get_by_id(
+        //     &db_conn,
+        //     "points",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // self.user_id = row.get(1);
+        // self.score_board_id = row.get(2);
+        // self.val = row.get(3);
+        // self.score_type = row.get(4);
     }
 }

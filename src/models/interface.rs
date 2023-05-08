@@ -1,7 +1,16 @@
+use sea_query::Iden;
+
 use crate::libs::db_connection::DatabaseConnection;
-use crate::libs::model::Model;
 use crate::models::file::File;
 use crate::models::score_board::ScoreBoard;
+
+#[derive(Iden)]
+#[iden = "interfaces"]
+pub enum InterfaceDatabaseDefinition {
+    Id,
+    Name,
+    Key,
+}
 
 pub struct Interface {
     pub id: i64,
@@ -33,15 +42,15 @@ impl Interface {
             return;
         };
 
-        let row = Model::get_by_id(
-            &db_conn,
-            "score_boards",
-            &self.id,
-        )
-            .await;
-
-        self.name = row.get(1);
-        self.key = row.get(2);
+        // let row = Model::get_by_id(
+        //     &db_conn,
+        //     "score_boards",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // self.name = row.get(1);
+        // self.key = row.get(2);
     }
 
     pub async fn get_score_boards_from_db(&mut self, db_conn: &DatabaseConnection) {
@@ -49,30 +58,30 @@ impl Interface {
             return;
         };
 
-        let rows = Model::get_where_key(
-            &db_conn,
-            "interface_scoreboards",
-            "interface_id",
-            &self.id,
-        )
-            .await;
-
-        let mut score_boards: Vec<ScoreBoard> = Vec::new();
-
-        for row in rows {
-            score_boards.push(
-                ScoreBoard::new(
-                    row.get(1),
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                )
-            )
-        }
-
-        self.score_boards = Option::from(score_boards);
+        // let rows = Model::get_where_key(
+        //     &db_conn,
+        //     "interface_scoreboards",
+        //     "interface_id",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // let mut score_boards: Vec<ScoreBoard> = Vec::new();
+        //
+        // for row in rows {
+        //     score_boards.push(
+        //         ScoreBoard::new(
+        //             row.get(1),
+        //             None,
+        //             None,
+        //             None,
+        //             None,
+        //             None
+        //         )
+        //     )
+        // }
+        //
+        // self.score_boards = Option::from(score_boards);
     }
 
     pub async fn get_files(&mut self, db_conn: &DatabaseConnection) {
@@ -80,27 +89,27 @@ impl Interface {
             return;
         };
 
-        let rows = Model::get_where_key(
-            &db_conn,
-            "files",
-            "interface_id",
-            &self.id,
-        )
-            .await;
-
-        let mut files: Vec<File> = Vec::new();
-
-        for row in rows {
-            files.push(
-                File::new(
-                    row.get(1),
-                    row.get(2),
-                    row.get(3),
-                    None,
-                )
-            )
-        }
-
-        self.files = Option::from(files);
+        // let rows = Model::get_where_key(
+        //     &db_conn,
+        //     "files",
+        //     "interface_id",
+        //     &self.id,
+        // )
+        //     .await;
+        //
+        // let mut files: Vec<File> = Vec::new();
+        //
+        // for row in rows {
+        //     files.push(
+        //         File::new(
+        //             row.get(1),
+        //             row.get(2),
+        //             row.get(3),
+        //             None,
+        //         )
+        //     )
+        // }
+        //
+        // self.files = Option::from(files);
     }
 }

@@ -1,4 +1,5 @@
 use actix_web::{get, post, Responder, HttpResponse, web};
+
 use crate::libs::db_connection::DatabaseConnection;
 use crate::libs::env_keys::check_env_key;
 use crate::models::score_board;
@@ -18,7 +19,7 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     )
         .await;
 
-    let mut score_board = score_board::ScoreBoard::new(
+    let score_board = score_board::ScoreBoard::new(
         id.into_inner(),
         None,
         None,
@@ -27,10 +28,10 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
         None
     );
 
-    score_board.get_from_db(&db_conn).await;
-    score_board.get_interfaces_from_db(&db_conn).await;
+    // score_board.get_from_db(&db_conn).await;
+    // score_board.get_interfaces_from_db(&db_conn).await;
 
-    db_conn.close();
+    // db_conn.close();
 
     HttpResponse::Ok().body(
         format!(
