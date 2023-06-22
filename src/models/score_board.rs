@@ -77,18 +77,25 @@ impl ScoreBoard {
             match row {
                 SimpleQueryMessage::Row(row) => {
                     let id: i64 = row.get(0)
-                        .and_then(|val| val.parse().ok())
+                        .unwrap()
+                        .parse()
                         .unwrap();
 
-                    let name: String = row.get(1).unwrap().to_string();
+                    let name: String = row.get(1)
+                        .unwrap()
+                        .to_string();
 
                     let point_increment: i32 = row.get(2)
-                        .and_then(|val| val.parse().ok())
+                        .unwrap()
+                        .parse()
                         .unwrap();
 
+
                     let penalty_increment: i32 = row.get(3)
-                        .and_then(|val| val.parse().ok())
+                        .unwrap()
+                        .parse()
                         .unwrap();
+
 
                     println!(
                         "{:?}, {:?}, {:?}, {:?}",
