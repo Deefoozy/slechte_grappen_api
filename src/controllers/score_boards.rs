@@ -19,7 +19,7 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     )
         .await;
 
-    let score_board = score_board::ScoreBoard::new(
+    let mut score_board = score_board::ScoreBoard::new(
         id.into_inner(),
         None,
         None,
@@ -28,16 +28,16 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
         None
     );
 
-    // score_board.get_from_db(&db_conn).await;
+    score_board.get_from_db(&db_conn).await;
     // score_board.get_interfaces_from_db(&db_conn).await;
 
-    // db_conn.close();
+    db_conn.close();
 
     HttpResponse::Ok().body(
         format!(
             "Hello world! {} | {}",
             score_board.id,
-            score_board.name.expect("No Name")
+            score_board.name.unwrap_or("".to_string())
         )
     )
 }

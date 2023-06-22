@@ -1,4 +1,5 @@
-use sea_query::Iden;
+use sea_query::{Expr, Iden, PostgresQueryBuilder, Query};
+use tokio_postgres::SimpleQueryMessage;
 
 use crate::libs::db_connection::DatabaseConnection;
 use crate::models::interface::Interface;
@@ -10,8 +11,8 @@ pub enum ScoreBoardTableDefinition {
     Table,
     Id,
     Name,
-    Point,
-    Penalty,
+    PointIncrement,
+    PenaltyIncrement,
 }
 
 pub struct ScoreBoard {
@@ -46,6 +47,62 @@ impl ScoreBoard {
         if self.id == 0 {
             return;
         };
+
+        let query = Query::select()
+            .columns(
+                vec![
+                    ScoreBoardTableDefinition::Id,
+                    ScoreBoardTableDefinition::Name,
+                    ScoreBoardTableDefinition::PointIncrement,
+                    ScoreBoardTableDefinition::PenaltyIncrement,
+                ]
+            )
+            .from(ScoreBoardTableDefinition::Table)
+            .and_where(
+                Expr::col(ScoreBoardTableDefinition::Id)
+                    .eq(self.id)
+            )
+            .to_string(PostgresQueryBuilder);
+
+        let res = db_conn.client
+            .simple_query(
+                query.as_str()
+            )
+            .await
+            .unwrap();
+
+        for row in res {
+            println!("{:?}", row);
+
+            match row {
+                SimpleQueryMessage::Row(row) => {
+                    let id: i64 = row.get(0)
+                        .and_then(|val| val.parse().ok())
+                        .unwrap();
+
+                    let name: String = row.get(1)
+                        .map(|val| val.to_owned())
+                        .unwrap();
+
+                    let point_increment: i32 = row.get(2)
+                        .and_then(|val| val.parse().ok())
+                        .unwrap();
+
+                    let penalty_increment: i32 = row.get(3)
+                        .and_then(|val| val.parse().ok())
+                        .unwrap();
+
+                    println!(
+                        "{:?}, {:?}, {:?}, {:?}",
+                        id,
+                        name,
+                        point_increment,
+                        penalty_increment
+                    );
+                },
+                _ => (),
+            }
+        }
 
         // let row = Model::get_by_id(
         //     &db_conn,
