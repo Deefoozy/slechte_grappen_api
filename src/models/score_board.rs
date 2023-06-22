@@ -15,6 +15,13 @@ pub enum ScoreBoardTableDefinition {
     PenaltyIncrement,
 }
 
+pub enum ScoreBoardTableIndexes {
+    Id = 0,
+    Name = 1,
+    PointIncrement = 2,
+    PenaltyIncrement = 3,
+}
+
 pub struct ScoreBoard {
     pub id: i64,
     pub name: Option<String>,
@@ -76,26 +83,25 @@ impl ScoreBoard {
 
             match row {
                 SimpleQueryMessage::Row(row) => {
-                    let id: i64 = row.get(0)
+                    let id: i64 = row.get(ScoreBoardTableIndexes::Id as usize)
                         .unwrap()
                         .parse()
                         .unwrap();
 
-                    let name: String = row.get(1)
+                    let name: String = row.get(ScoreBoardTableIndexes::Name as usize)
                         .unwrap()
                         .to_string();
 
-                    let point_increment: i32 = row.get(2)
+                    let point_increment: i32 = row.get(ScoreBoardTableIndexes::PointIncrement as usize)
                         .unwrap()
                         .parse()
                         .unwrap();
 
 
-                    let penalty_increment: i32 = row.get(3)
+                    let penalty_increment: i32 = row.get(ScoreBoardTableIndexes::PenaltyIncrement as usize)
                         .unwrap()
                         .parse()
                         .unwrap();
-
 
                     println!(
                         "{:?}, {:?}, {:?}, {:?}",
