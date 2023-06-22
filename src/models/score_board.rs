@@ -80,9 +80,7 @@ impl ScoreBoard {
                         .and_then(|val| val.parse().ok())
                         .unwrap();
 
-                    let name: String = row.get(1)
-                        .map(|val| val.to_owned())
-                        .unwrap();
+                    let name: String = row.get(1).unwrap().to_string();
 
                     let point_increment: i32 = row.get(2)
                         .and_then(|val| val.parse().ok())
