@@ -1,8 +1,7 @@
 use actix_web::{get, post, Responder, HttpResponse, web};
-
 use crate::libs::db_connection::DatabaseConnection;
 use crate::libs::env_keys::check_env_key;
-use crate::models::score_board;
+use crate::models::user::User;
 
 #[get("/")]
 pub async fn get_all() -> impl Responder {
@@ -19,27 +18,25 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     )
         .await;
 
-    let mut score_board = score_board::ScoreBoard::new(
+    let mut user: User = User::new(
         id.into_inner(),
-        None,
-        None,
-        None,
         None,
         None
     );
 
-    score_board.get_from_db(&db_conn).await;
-    score_board.get_interfaces_from_db(&db_conn).await;
-    score_board.get_users_from_db(&db_conn).await;
+    user.get_from_db(&db_conn).await;
+    user.get_score_boards_from_db(&db_conn).await;
 
-    db_conn.close();
+    let group_name: &str =
+        if user.score_boards.as_ref().unwrap().len() > 0 { user.score_boards.as_ref().unwrap()[0].name.as_ref().expect("No GroupName") }
+        else { "No Groups" };
 
     HttpResponse::Ok().body(
         format!(
-            "id: {} | board name: {} | user amount: {}",
-            score_board.id,
-            score_board.name.expect("No Name"),
-            score_board.users.unwrap().len()
+            "{} | {} | {}",
+            user.id,
+            user.name.as_ref().expect("No Name"),
+            group_name
         )
     )
 }

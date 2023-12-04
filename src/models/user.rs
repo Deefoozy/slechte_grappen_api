@@ -1,6 +1,7 @@
 use sea_query::Iden;
 
 use crate::libs::db_connection::DatabaseConnection;
+use crate::libs::model::Model;
 use crate::models::score_board::ScoreBoard;
 
 #[derive(Iden)]
@@ -50,29 +51,30 @@ impl User {
             return;
         };
 
-        // let rows = Model::get_where_key(
-        //     &db_conn,
-        //     "user_scoreboards",
-        //     "score_board_id",
-        //     &self.id,
-        // )
-        //     .await;
-        //
-        // let mut score_boards: Vec<ScoreBoard> = Vec::new();
-        //
-        // for row in rows {
-        //     score_boards.push(
-        //         ScoreBoard::new(
-        //             row.get(1),
-        //             None,
-        //             None,
-        //             None,
-        //             None,
-        //             None
-        //         )
-        //     )
-        // }
-        //
-        // self.score_boards = Option::from(score_boards);
+        let rows = Model::get_where(
+            &db_conn,
+            "user_scoreboards",
+            "user_id",
+            &self.id,
+        )
+            .await;
+
+        let mut score_boards: Vec<ScoreBoard> = Vec::new();
+
+        for row in rows {
+            let mut temp_score_board: ScoreBoard = ScoreBoard::new(
+                row.get(1),
+                None,
+                None,
+                None,
+                None,
+                None
+            );
+            temp_score_board.get_from_db(&db_conn).await;
+
+            score_boards.push(temp_score_board);
+        }
+
+        self.score_boards = Option::from(score_boards);
     }
 }
