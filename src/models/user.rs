@@ -52,7 +52,7 @@ impl User {
         let mut score_boards: Vec<ScoreBoard> = Vec::new();
 
         for row in rows {
-            let mut temp_score_board = ScoreBoard::new(
+            let mut temp_score_board: ScoreBoard = ScoreBoard::new(
                 row.get(1),
                 None,
                 None,

@@ -64,15 +64,16 @@ impl ScoreBoard {
         let mut interfaces: Vec<Interface> = Vec::new();
 
         for row in rows {
-            interfaces.push(
-                Interface::new(
-                    row.get(1),
-                    None,
-                    None,
-                    None,
-                    None
-                )
-            )
+            let mut temp_interface:Interface = Interface::new(
+                row.get(1),
+                None,
+                None,
+                None,
+                None
+            );
+            temp_interface.get_from_db(&db_conn).await;
+
+            interfaces.push(temp_interface);
         }
 
         self.interfaces = Option::from(interfaces);

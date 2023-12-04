@@ -1,4 +1,3 @@
-use actix_web::web::Data;
 use tokio_postgres::Row;
 use crate::libs::db_connection::DatabaseConnection;
 
