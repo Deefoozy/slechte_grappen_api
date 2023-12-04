@@ -29,12 +29,14 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
 
     score_board.get_from_db(&db_conn).await;
     score_board.get_interfaces_from_db(&db_conn).await;
+    score_board.get_users_from_db(&db_conn).await;
 
     HttpResponse::Ok().body(
         format!(
-            "Hello world! {} | {}",
+            "id: {} | board name: {} | user amount: {}",
             score_board.id,
-            score_board.name.expect("No Name")
+            score_board.name.expect("No Name"),
+            score_board.users.unwrap().len()
         )
     )
 }
