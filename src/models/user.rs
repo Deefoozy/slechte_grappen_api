@@ -52,16 +52,17 @@ impl User {
         let mut score_boards: Vec<ScoreBoard> = Vec::new();
 
         for row in rows {
-            score_boards.push(
-                ScoreBoard::new(
-                    row.get(1),
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                )
-            )
+            let mut temp_score_board = ScoreBoard::new(
+                row.get(1),
+                None,
+                None,
+                None,
+                None,
+                None
+            );
+            temp_score_board.get_from_db(&db_conn).await;
+
+            score_boards.push(temp_score_board);
         }
 
         self.score_boards = Option::from(score_boards);
