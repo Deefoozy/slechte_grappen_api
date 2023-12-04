@@ -1179,6 +1179,7 @@ dependencies = [
  "actix-web",
  "dotenv",
  "refinery",
+ "serde_json",
  "tokio",
  "tokio-postgres",
 ]
