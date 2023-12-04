@@ -32,7 +32,7 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
             "{} | {} | {}",
             user.id,
             user.name.expect("No Name"),
-            user.score_boards.len()
+            user.score_boards.unwrap_or_default().len()
         )
     )
 }
