@@ -44,7 +44,7 @@ impl User {
         let rows = Model::get_where(
             &db_conn,
             "user_scoreboards",
-            "score_board_id",
+            "user_id",
             &self.id,
         )
             .await;
