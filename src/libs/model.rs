@@ -32,7 +32,7 @@ impl Model {
         )
             .await
     }
-    
+
     pub async fn get_single_dynamic(
         db_conn: &DatabaseConnection,
         table_name: &str,
