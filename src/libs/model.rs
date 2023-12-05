@@ -9,7 +9,7 @@ impl Model {
         table_name: &str,
         id: &i64
     ) -> Row {
-        Model::get_single_dynamic(
+        Model::select_single(
             db_conn,
             table_name,
             &"id = $1",
@@ -24,7 +24,7 @@ impl Model {
         key: &str,
         id: &i64
     ) -> Vec<Row> {
-        Model::get_dynamic(
+        Model::select(
             db_conn,
             table_name,
             &format!("{} = $1", &key),
@@ -33,7 +33,7 @@ impl Model {
             .await
     }
 
-    pub async fn get_single_dynamic(
+    pub async fn select_single(
         db_conn: &DatabaseConnection,
         table_name: &str,
         where_statement: &str,
@@ -51,7 +51,7 @@ impl Model {
             .unwrap()
     }
 
-    pub async fn get_dynamic(
+    pub async fn select(
         db_conn: &DatabaseConnection,
         table_name: &str,
         where_statement: &str,
