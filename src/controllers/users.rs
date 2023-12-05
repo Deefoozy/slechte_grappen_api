@@ -27,15 +27,19 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     user.get_from_db(&db_conn).await;
     user.get_score_boards_from_db(&db_conn).await;
 
+    let no_group_message = "No GroupName".to_string();
+    let no_groups_message = "No Groups".to_string();
+    let no_name_message = "No Name".to_string();
+
     let group_name: &str =
-        if user.score_boards.as_ref().unwrap().len() > 0 { user.score_boards.as_ref().unwrap()[0].name.as_ref().expect("No GroupName") }
-        else { "No Groups" };
+        if user.score_boards.as_ref().unwrap().len() > 0 { user.score_boards.as_ref().unwrap()[0].name.as_ref().unwrap_or(&no_group_message) }
+        else { &no_groups_message };
 
     HttpResponse::Ok().body(
         format!(
             "{} | {} | {}",
             user.id,
-            user.name.as_ref().expect("No Name"),
+            user.name.as_ref().unwrap_or(&no_name_message),
             group_name
         )
     )
