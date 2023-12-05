@@ -1,4 +1,4 @@
-use tokio_postgres::{Error};
+use tokio_postgres::Error;
 use crate::check_env_key;
 use crate::libs::db_connection;
 

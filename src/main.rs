@@ -4,9 +4,8 @@ mod libs;
 
 use std::io::Result;
 use dotenv::dotenv;
-use actix_web::{get, Responder, HttpServer, HttpResponse, App, web};
+use actix_web::{HttpServer, App, web};
 use crate::libs::env_keys::check_env_key;
-use crate::libs::db_connection;
 
 #[actix_web::main]
 async fn main() -> Result<()> {
