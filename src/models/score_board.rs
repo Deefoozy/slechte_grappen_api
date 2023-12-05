@@ -80,52 +80,29 @@ impl ScoreBoard {
             .unwrap();
 
         for row in res {
-            println!("{:?}", row);
-
             match row {
                 SimpleQueryMessage::Row(row) => {
-                    let id: i64 = row.get(ScoreBoardTableIndexes::Id as usize)
-                        .unwrap()
-                        .parse()
-                        .unwrap();
-
-                    let name: String = row.get(ScoreBoardTableIndexes::Name as usize)
-                        .unwrap()
-                        .to_string();
+                    self.name = Option::from(
+                        row.get(ScoreBoardTableIndexes::Name as usize)
+                            .unwrap()
+                            .to_string()
+                    );
 
                     let point_increment: i32 = row.get(ScoreBoardTableIndexes::PointIncrement as usize)
                         .unwrap()
                         .parse()
                         .unwrap();
-
+                    self.point_increment = Option::from(point_increment);
 
                     let penalty_increment: i32 = row.get(ScoreBoardTableIndexes::PenaltyIncrement as usize)
                         .unwrap()
                         .parse()
                         .unwrap();
-
-                    println!(
-                        "{:?}, {:?}, {:?}, {:?}",
-                        id,
-                        name,
-                        point_increment,
-                        penalty_increment
-                    );
+                    self.penalty_increment = Option::from(penalty_increment);
                 },
                 _ => (),
             }
         }
-
-        // let row = Model::get_by_id(
-        //     &db_conn,
-        //     "score_boards",
-        //     &self.id,
-        // )
-        //     .await;
-        //
-        // self.name = row.get(1);
-        // self.point_increment = row.get(2);
-        // self.penalty_increment = row.get(3);
     }
 
     pub async fn get_interfaces_from_db(&mut self, db_conn: &DatabaseConnection) {
