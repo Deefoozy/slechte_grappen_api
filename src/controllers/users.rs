@@ -27,10 +27,6 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     user.get_from_db(&db_conn).await;
     user.get_score_boards_from_db(&db_conn).await;
 
-    let group_name: &str =
-        if user.score_boards.as_ref().unwrap().len() > 0 { user.score_boards.as_ref().unwrap()[0].name.as_ref().expect("No GroupName") }
-        else { "No Groups" };
-
     HttpResponse::Ok().body(
         serde_json::to_string(&user).unwrap()
     )

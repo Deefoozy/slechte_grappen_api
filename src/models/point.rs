@@ -1,6 +1,8 @@
 use crate::libs::db_connection::DatabaseConnection;
 use crate::libs::model::Model;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct Point {
     pub id: i64,
     pub user_id: Option<i64>,
