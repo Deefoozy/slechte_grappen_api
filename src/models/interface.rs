@@ -2,7 +2,9 @@ use crate::libs::db_connection::DatabaseConnection;
 use crate::libs::model::Model;
 use crate::models::file::File;
 use crate::models::score_board::ScoreBoard;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct Interface {
     pub id: i64,
     pub name: Option<String>,

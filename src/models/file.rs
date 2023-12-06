@@ -1,7 +1,9 @@
 use crate::libs::db_connection::DatabaseConnection;
 use crate::libs::model::Model;
 use crate::models::interface::Interface;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct File {
     pub id: i64,
     pub interface_id: Option<i64>,

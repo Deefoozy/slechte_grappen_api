@@ -32,12 +32,7 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
         else { "No Groups" };
 
     HttpResponse::Ok().body(
-        format!(
-            "{} | {} | {}",
-            user.id,
-            user.name.as_ref().expect("No Name"),
-            group_name
-        )
+        serde_json::to_string(&user).unwrap()
     )
 }
 

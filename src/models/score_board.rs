@@ -2,7 +2,9 @@ use crate::libs::db_connection::DatabaseConnection;
 use crate::libs::model::Model;
 use crate::models::interface::Interface;
 use crate::models::user::User;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct ScoreBoard {
     pub id: i64,
     pub name: Option<String>,
