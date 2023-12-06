@@ -28,7 +28,7 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     user.get_score_boards_from_db(&db_conn).await;
 
     HttpResponse::Ok().body(
-        serde_json::to_string(&user).unwrap()
+        serde_json::to_string(&user).unwrap_or("{}".to_string())
     )
 }
 

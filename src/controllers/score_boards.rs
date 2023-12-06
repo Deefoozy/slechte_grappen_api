@@ -32,12 +32,7 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     score_board.get_users_from_db(&db_conn).await;
 
     HttpResponse::Ok().body(
-        format!(
-            "id: {} | board name: {} | user amount: {}",
-            score_board.id,
-            score_board.name.expect("No Name"),
-            score_board.users.unwrap().len()
-        )
+        serde_json::to_string(&score_board).unwrap_or("{}".to_string())
     )
 }
 
