@@ -73,17 +73,4 @@ impl User {
         return Ok(score_boards);
     }
 
-    pub async fn load_relations(&mut self, db_conn: &DatabaseConnection) {
-        self.get_score_boards_from_db(&db_conn).await;
-    }
-
-    pub async fn get_score_boards_from_db(&mut self, db_conn: &DatabaseConnection) {
-        if self.id == 0 {
-            return;
-        };
-
-        self.score_boards = User::get_score_boards(db_conn, self.id)
-            .await
-            .unwrap();
-    }
 }

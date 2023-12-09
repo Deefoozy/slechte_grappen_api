@@ -1,6 +1,7 @@
 mod models;
 mod controllers;
 mod libs;
+mod repositories;
 
 use std::io::Result;
 use dotenv::dotenv;
