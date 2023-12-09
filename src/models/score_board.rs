@@ -97,14 +97,16 @@ impl ScoreBoard {
         let mut users: Vec<User> = Vec::new();
 
         for row in rows {
-            let mut temp_user = User::new(
+            let temp_user_result = User::new_from_id(
+                db_conn,
                 row.get(1),
-                None,
-                None,
-            );
-            temp_user.get_from_db(&db_conn).await;
+                false,
+            )
+                .await;
 
-            users.push(temp_user);
+            if let Ok(user) = temp_user_result {
+                users.push(user);
+            }
         }
 
         self.users = Option::from(users);

@@ -6,15 +6,15 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct User {
     pub id: i64,
-    pub name: Option<String>,
-    pub score_boards: Option<Vec<ScoreBoard>>,
+    pub name: String,
+    pub score_boards: Vec<ScoreBoard>,
 }
 
 impl User {
     pub fn new(
         id: i64,
-        name: Option<String>,
-        score_boards: Option<Vec<ScoreBoard>>,
+        name: String,
+        score_boards: Vec<ScoreBoard>,
     ) -> Self {
         Self {
             id,
@@ -23,31 +23,41 @@ impl User {
         }
     }
 
-    pub async fn get_from_db(&mut self, db_conn: &DatabaseConnection) {
-        if self.id == 0 {
-            return;
-        };
+    pub async fn new_from_id(
+        db_conn: &DatabaseConnection,
+        id: i64,
+        load_relations: bool,
+    ) -> Result<Self, ()> {
+        if id == 0 {
+            return Err(());
+        }
 
         let row = Model::get_by_id(
             &db_conn,
             "users",
-            &self.id,
+            &id,
         )
             .await;
 
-        self.name = row.get(1);
+        let mut instance: User = User::new(
+            id,
+            row.get(1),
+            Vec::new(),
+        );
+
+        if load_relations {
+            instance.load_relations(&db_conn).await;
+        }
+
+        Ok(instance)
     }
 
-    pub async fn get_score_boards_from_db(&mut self, db_conn: &DatabaseConnection) {
-        if self.id == 0 {
-            return;
-        };
-
+    pub async fn get_score_boards(db_conn: &DatabaseConnection, id: i64) -> Result<Vec<ScoreBoard>, ()> {
         let rows = Model::get_where(
             &db_conn,
             "user_scoreboards",
             "user_id",
-            &self.id,
+            &id,
         )
             .await;
 
@@ -67,6 +77,35 @@ impl User {
             score_boards.push(temp_score_board);
         }
 
-        self.score_boards = Option::from(score_boards);
+        return Ok(score_boards);
+    }
+
+    pub async fn get_from_db(&mut self, db_conn: &DatabaseConnection) {
+        if self.id == 0 {
+            return;
+        };
+
+        let row = Model::get_by_id(
+            &db_conn,
+            "users",
+            &self.id,
+        )
+            .await;
+
+        self.name = row.get(1);
+    }
+
+    pub async fn load_relations(&mut self, db_conn: &DatabaseConnection) {
+        self.get_score_boards_from_db(&db_conn).await;
+    }
+
+    pub async fn get_score_boards_from_db(&mut self, db_conn: &DatabaseConnection) {
+        if self.id == 0 {
+            return;
+        };
+
+        self.score_boards = User::get_score_boards(db_conn, self.id)
+            .await
+            .unwrap();
     }
 }

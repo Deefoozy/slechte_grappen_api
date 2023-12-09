@@ -1,6 +1,5 @@
 use tokio_postgres::Error;
-use crate::check_env_key;
-use crate::libs::db_connection;
+use crate::libs::db_connection::DatabaseConnection;
 
 mod embedded {
     use refinery::embed_migrations;
@@ -8,13 +7,8 @@ mod embedded {
 }
 
 pub async fn db_migrate() -> Result<(), Error> {
-    let mut db_conn = db_connection::DatabaseConnection::new(
-        check_env_key("DB_HOST"),
-        check_env_key("DB_USER"),
-        check_env_key("DB_PASSWORD"),
-        check_env_key("DB_NAME"),
-    ).await;
-
+    let mut db_conn = DatabaseConnection::new_from_env()
+        .await;
 
     let migration_report = embedded::migrations::runner()
         .run_async(&mut db_conn.client)
