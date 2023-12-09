@@ -73,21 +73,6 @@ impl User {
         return Ok(score_boards);
     }
 
-    pub async fn get_from_db(&mut self, db_conn: &DatabaseConnection) {
-        if self.id == 0 {
-            return;
-        };
-
-        let row = Model::get_by_id(
-            &db_conn,
-            "users",
-            &self.id,
-        )
-            .await;
-
-        self.name = row.get(1);
-    }
-
     pub async fn load_relations(&mut self, db_conn: &DatabaseConnection) {
         self.get_score_boards_from_db(&db_conn).await;
     }

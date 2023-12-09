@@ -60,21 +60,56 @@ impl ScoreBoard {
         )
     }
 
-    pub async fn get_from_db(&mut self, db_conn: &DatabaseConnection) {
-        if self.id == 0 {
-            return;
-        };
-
-        let row = Model::get_by_id(
+    pub async fn get_interfaces(db_conn: &DatabaseConnection, id: i64) -> Result<Vec<Interface>, ()> {
+        let rows = Model::get_where(
             &db_conn,
-            "score_boards",
-            &self.id,
+            "interface_scoreboards",
+            "score_board_id",
+            &id,
         )
             .await;
 
-        self.name = row.get(1);
-        self.point_increment = row.get(2);
-        self.penalty_increment = row.get(3);
+        let mut interfaces: Vec<Interface> = Vec::new();
+
+        for row in rows {
+            let temp_score_board: Interface = Interface::new(
+                row.get(1),
+                None,
+                None,
+                None,
+                None,
+            );
+
+            interfaces.push(temp_score_board);
+        }
+
+        return Ok(interfaces);
+    }
+
+    pub async fn get_users(db_conn: &DatabaseConnection, id: i64) -> Result<Vec<User>, ()> {
+        let rows = Model::get_where(
+            &db_conn,
+            "user_scoreboards",
+            "score_board_id",
+            &id,
+        )
+            .await;
+
+        let mut users: Vec<User> = Vec::new();
+
+        for row in rows {
+            let temp_user: Result<User, ()> = User::new_from_id(
+                db_conn,
+                row.get(1),
+            )
+                .await;
+
+            if let Ok(score_board) = temp_user {
+                users.push(score_board);
+            }
+        }
+
+        return Ok(users);
     }
 
     pub async fn load_relations(&mut self, db_conn: &DatabaseConnection) {
@@ -87,30 +122,9 @@ impl ScoreBoard {
             return;
         };
 
-        let rows = Model::get_where(
-            &db_conn,
-            "interface_scoreboards",
-            "score_board_id",
-            &self.id,
-        )
-            .await;
-
-        let mut interfaces: Vec<Interface> = Vec::new();
-
-        for row in rows {
-            let mut temp_interface:Interface = Interface::new(
-                row.get(1),
-                None,
-                None,
-                None,
-                None
-            );
-            temp_interface.get_from_db(&db_conn).await;
-
-            interfaces.push(temp_interface);
-        }
-
-        self.interfaces = interfaces;
+        self.interfaces = ScoreBoard::get_interfaces(db_conn, self.id)
+            .await
+            .unwrap();
     }
 
     pub async fn get_users_from_db(&mut self, db_conn: &DatabaseConnection) {
@@ -118,28 +132,8 @@ impl ScoreBoard {
             return;
         };
 
-        let rows = Model::get_where(
-            &db_conn,
-            "user_scoreboards",
-            "score_board_id",
-            &self.id,
-        )
-            .await;
-
-        let mut users: Vec<User> = Vec::new();
-
-        for row in rows {
-            let temp_user_result = User::new_from_id(
-                db_conn,
-                row.get(1),
-            )
-                .await;
-
-            if let Ok(user) = temp_user_result {
-                users.push(user);
-            }
-        }
-
-        self.users = users;
+        self.users = ScoreBoard::get_users(db_conn, self.id)
+            .await
+            .unwrap();
     }
 }
