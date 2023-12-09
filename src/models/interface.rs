@@ -62,16 +62,15 @@ impl Interface {
         let mut score_boards: Vec<ScoreBoard> = Vec::new();
 
         for row in rows {
-            score_boards.push(
-                ScoreBoard::new(
-                    row.get(1),
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                )
+            let temp_score_board = ScoreBoard::new_from_id(
+                &db_conn,
+                row.get(1),
             )
+                .await;
+
+            if let Ok(score_board) = temp_score_board {
+                score_boards.push(score_board);
+            }
         }
 
         self.score_boards = Option::from(score_boards);

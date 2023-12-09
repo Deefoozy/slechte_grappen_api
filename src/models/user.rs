@@ -26,7 +26,6 @@ impl User {
     pub async fn new_from_id(
         db_conn: &DatabaseConnection,
         id: i64,
-        load_relations: bool,
     ) -> Result<Self, ()> {
         if id == 0 {
             return Err(());
@@ -39,17 +38,13 @@ impl User {
         )
             .await;
 
-        let mut instance: User = User::new(
-            id,
-            row.get(1),
-            Vec::new(),
-        );
-
-        if load_relations {
-            instance.load_relations(&db_conn).await;
-        }
-
-        Ok(instance)
+        Ok(
+            User::new(
+                id,
+                row.get(1),
+                Vec::new(),
+            )
+        )
     }
 
     pub async fn get_score_boards(db_conn: &DatabaseConnection, id: i64) -> Result<Vec<ScoreBoard>, ()> {
@@ -64,17 +59,15 @@ impl User {
         let mut score_boards: Vec<ScoreBoard> = Vec::new();
 
         for row in rows {
-            let mut temp_score_board: ScoreBoard = ScoreBoard::new(
+            let temp_score_board: Result<ScoreBoard, ()> = ScoreBoard::new_from_id(
+                db_conn,
                 row.get(1),
-                None,
-                None,
-                None,
-                None,
-                None
-            );
-            temp_score_board.get_from_db(&db_conn).await;
+            )
+                .await;
 
-            score_boards.push(temp_score_board);
+            if let Ok(score_board) = temp_score_board {
+                score_boards.push(score_board);
+            }
         }
 
         return Ok(score_boards);

@@ -15,12 +15,13 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     let user = User::new_from_id(
         &db_conn,
         *id,
-        true,
     )
         .await;
 
     match user {
-        Ok(user) => {
+        Ok(mut user) => {
+            user.load_relations(&db_conn).await;
+
             HttpResponse::Ok()
                 .body(serde_json::to_string(&user).unwrap_or("{}".to_string()))
         },

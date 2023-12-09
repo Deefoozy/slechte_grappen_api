@@ -1,6 +1,6 @@
 use actix_web::{get, post, Responder, HttpResponse, web};
 use crate::libs::db_connection::DatabaseConnection;
-use crate::models::score_board;
+use crate::models::score_board::ScoreBoard;
 
 #[get("/")]
 pub async fn get_all() -> impl Responder {
@@ -12,22 +12,24 @@ pub async fn get(id: web::Path<i64>) -> impl Responder {
     let db_conn = DatabaseConnection::new_from_env()
         .await;
 
-    let mut score_board = score_board::ScoreBoard::new(
+    let score_board = ScoreBoard::new_from_id(
+        &db_conn,
         *id,
-        None,
-        None,
-        None,
-        None,
-        None
-    );
-
-    score_board.get_from_db(&db_conn).await;
-    score_board.get_interfaces_from_db(&db_conn).await;
-    score_board.get_users_from_db(&db_conn).await;
-
-    HttpResponse::Ok().body(
-        serde_json::to_string(&score_board).unwrap_or("{}".to_string())
     )
+        .await;
+
+    match score_board {
+        Ok(mut score_board) => {
+            score_board.load_relations(&db_conn).await;
+
+            HttpResponse::Ok()
+                .body(serde_json::to_string(&score_board).unwrap_or("{}".to_string()))
+        },
+        Err(_) => {
+            HttpResponse::InternalServerError()
+                .body("{}".to_string())
+        }
+    }
 }
 
 #[post("/")]
