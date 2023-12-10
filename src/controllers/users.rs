@@ -1,6 +1,9 @@
+use std::num::NonZeroI64;
+
 use actix_web::{get, post, Responder, HttpResponse, web};
 use crate::libs::db_connection::DatabaseConnection;
-use crate::models::user::User;
+
+use crate::repositories::UsersRepository;
 
 #[get("/")]
 pub async fn get_all() -> impl Responder {
@@ -8,19 +11,17 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[get("/{id}")]
-pub async fn get(id: web::Path<i64>) -> impl Responder {
+pub async fn get(id: web::Path<NonZeroI64>) -> impl Responder {
     let db_conn = DatabaseConnection::new_from_env()
         .await;
 
-    let user = User::new_from_id(
-        &db_conn,
-        *id,
-    )
+    let repo = UsersRepository::new(db_conn);
+    let user = repo.get_user_from_id(*id)
         .await;
 
     match user {
         Ok(mut user) => {
-            user.load_relations(&db_conn).await;
+            let _unhandled_err = repo.load_related_scoreboards(&mut user).await;
 
             HttpResponse::Ok()
                 .body(serde_json::to_string(&user).unwrap_or("{}".to_string()))
